@@ -21,29 +21,23 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async(req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
   try {
-    const tagById = await Tag.findOne({
-      where: {
-        id: req.params.id
-      },
-      include: [{
-        model: Product,
-        through: { attributes: [Tag] }  
-      }]
+    const tagsData = await Tag.findByPk(req.params.id, {
+      include: [Product]
     });
-    if (!tagById) {
-      res.status(404).json({ message: 'Tag not found' });
+    if (!tagsData) {
+      res.status(404).json({ message: 'No location found with this id!'});
       return;
     }
-    res.status(200).json(tagById);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json(error);
-  }
+    res.status(200).json(tagsData);
+  } catch(err) {
+  res.status(500).json(err);
+}
 });
+
 
 router.post('/', async (req, res) => {
   // create a new tag
